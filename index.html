@@ -20,32 +20,7 @@
     padding-top: env(safe-area-inset-top, 0px);
     padding-bottom: env(safe-area-inset-bottom, 0px);
   }
-  @media (prefers-color-scheme: dark) {
-    :root:not([data-theme="light"]) {
-      --fundo: #1b1f1d;
-      --superficie: #242a27;
-      --texto: #eef0ec;
-      --suave: #a6aeaa;
-      --menta: #7fcdb0;
-      --menta-escuro: #8fdcc0;
-      --menta-claro: #22332c;
-      --borda: #38413d;
-      --erro: #f09a8a;
-      --sobre-menta: #12291f;
-    }
-  }
-  :root[data-theme="dark"] {
-    --fundo: #1b1f1d;
-    --superficie: #242a27;
-    --texto: #eef0ec;
-    --suave: #a6aeaa;
-    --menta: #7fcdb0;
-    --menta-escuro: #8fdcc0;
-    --menta-claro: #22332c;
-    --borda: #38413d;
-    --erro: #f09a8a;
-    --sobre-menta: #12291f;
-  }
+  :root { color-scheme: light; }
   html { scroll-padding-top: env(safe-area-inset-top, 0px); }
   * { box-sizing: border-box; }
   html, body { margin: 0; padding: 0; }
