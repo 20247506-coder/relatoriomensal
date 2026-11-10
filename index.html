@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Relatório mensal do Instagram</title>
+<style>
+  :root {
+    --fundo: #faf8f3;
+    --superficie: #ffffff;
+    --texto: #2b2f2d;
+    --suave: #5f6763;
+    --menta: #7fcdb0;
+    --menta-escuro: #2f7f62;
+    --menta-claro: #e6f5ee;
+    --borda: #e4e1d8;
+    --erro: #b3402f;
+    --sobre-menta: #1d3a2f;
+    box-sizing: border-box;
+    padding-top: env(safe-area-inset-top, 0px);
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --fundo: #1b1f1d;
+      --superficie: #242a27;
+      --texto: #eef0ec;
+      --suave: #a6aeaa;
+      --menta: #7fcdb0;
+      --menta-escuro: #8fdcc0;
+      --menta-claro: #22332c;
+      --borda: #38413d;
+      --erro: #f09a8a;
+      --sobre-menta: #12291f;
+    }
+  }
+  :root[data-theme="dark"] {
+    --fundo: #1b1f1d;
+    --superficie: #242a27;
+    --texto: #eef0ec;
+    --suave: #a6aeaa;
+    --menta: #7fcdb0;
+    --menta-escuro: #8fdcc0;
+    --menta-claro: #22332c;
+    --borda: #38413d;
+    --erro: #f09a8a;
+    --sobre-menta: #12291f;
+  }
+  html { scroll-padding-top: env(safe-area-inset-top, 0px); }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--fundo);
+    color: var(--texto);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    line-height: 1.6;
+    padding: 48px 20px 72px;
+    min-height: 100vh;
+  }
+  main { max-width: 560px; margin: 0 auto; }
+  h1 {
+    font-family: Georgia, "Times New Roman", Times, serif;
+    font-weight: 600;
+    font-size: 2rem;
+    line-height: 1.2;
+    margin: 0;
+    padding-bottom: 14px;
+    border-bottom: 3px solid var(--menta);
+    display: inline-block;
+  }
+  .sub { color: var(--suave); margin: 14px 0 40px; }
+  .linha { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+  .campo { margin-bottom: 24px; }
+  label { display: block; font-size: 0.95rem; font-weight: 600; margin-bottom: 8px; }
+  input, select {
+    width: 100%;
+    font: inherit;
+    font-size: 1rem;
+    color: var(--texto);
+    background: var(--superficie);
+    border: 1px solid var(--borda);
+    border-radius: 10px;
+    padding: 13px 14px;
+    min-height: 48px;
+  }
+  input:focus, select:focus, button:focus-visible {
+    outline: 3px solid var(--menta);
+    outline-offset: 1px;
+    border-color: var(--menta-escuro);
+  }
+  button {
+    font: inherit;
+    font-weight: 600;
+    min-height: 48px;
+    border-radius: 10px;
+    padding: 12px 22px;
+    cursor: pointer;
+  }
+  .primario {
+    width: 100%;
+    background: var(--menta);
+    color: var(--sobre-menta);
+    border: 1px solid var(--menta);
+    margin-top: 8px;
+  }
+  .primario:hover { filter: brightness(0.95); }
+  .secundario {
+    background: var(--superficie);
+    color: var(--menta-escuro);
+    border: 1px solid var(--menta);
+  }
+  .secundario:hover { background: var(--menta-claro); }
+  .erro { color: var(--erro); margin: 20px 0 0; font-weight: 600; }
+  .resultado {
+    margin-top: 40px;
+    background: var(--menta-claro);
+    border-left: 4px solid var(--menta);
+    border-radius: 10px;
+    padding: 24px 22px;
+  }
+  .resultado p { margin: 0 0 20px; font-size: 1.05rem; }
+  .acoes { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
+  .aviso { color: var(--menta-escuro); font-weight: 600; }
+  .pdf { margin-top: 20px; }
+  .resultado .dica { color: var(--suave); font-size: 0.9rem; margin: 10px 0 0; }
+
+  /* Tela do relatório: sempre clara, mesmo no modo escuro */
+  #tela-relatorio {
+    --superficie: #ffffff;
+    --texto: #2b2f2d;
+    --suave: #5f6763;
+    --menta: #7fcdb0;
+    --menta-escuro: #2f7f62;
+    --menta-claro: #e6f5ee;
+    --borda: #e4e1d8;
+    --erro: #b3402f;
+    --sobre-menta: #1d3a2f;
+    background: #faf8f3;
+    color: #2b2f2d;
+  }
+  body.modo-relatorio { background: #faf8f3; padding: 24px 16px 48px; }
+  .controles { max-width: 1920px; margin: 0 auto 20px; }
+  .barra { display: flex; flex-wrap: wrap; gap: 12px; }
+  .barra button { flex: 1 1 220px; width: auto; margin-top: 0; }
+  #caixa-slide { max-width: 1920px; margin: 0 auto; overflow: hidden; border: 1px solid var(--borda); }
+  #slide {
+    width: 1920px;
+    height: 1080px;
+    transform-origin: top left;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 110px 160px 100px;
+    background: #faf8f3;
+    color: #2b2f2d;
+    text-align: center;
+    overflow: hidden;
+  }
+  #slide .imp-titulo {
+    font-family: Georgia, "Times New Roman", Times, serif;
+    font-size: 64px;
+    font-weight: 600;
+    line-height: 1.2;
+    margin: 0;
+    padding-bottom: 20px;
+    border-bottom: 8px solid #7fcdb0;
+  }
+  #slide .imp-periodo { font-size: 36px; color: #5f6763; margin: 28px 0 0; }
+  #slide .imp-corpo { flex: 1; display: flex; align-items: center; justify-content: center; width: 100%; }
+  #slide .imp-texto { font-size: 56px; line-height: 1.45; max-width: 1500px; margin: 0; color: #2b2f2d; }
+
+  [hidden] { display: none !important; }
+  @media (max-width: 480px) {
+    body { padding-top: 32px; }
+    .linha { grid-template-columns: 1fr; gap: 0; }
+    h1 { font-size: 1.7rem; }
+  }
+
+  @page { size: 1920px 1080px; margin: 0; }
+  @media print {
+    :root { padding: 0 !important; }
+    html, body {
+      margin: 0;
+      padding: 0 !important;
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+    }
+    body.modo-relatorio {
+      background: #faf8f3 !important;
+      height: 1080px;
+      overflow: hidden;
+      min-height: 0;
+    }
+    .controles { display: none !important; }
+    #caixa-slide {
+      width: 1920px;
+      max-width: none;
+      height: 1080px !important;
+      margin: 0;
+      border: 0;
+      overflow: hidden;
+    }
+    #slide { transform: none !important; }
+  }
+</style>
+</head>
+<body>
+<main id="tela-campos">
+  <h1>Relatório mensal</h1>
+  <p class="sub">Preencha os números do mês e gere o texto do relatório.</p>
+
+  <div class="linha">
+    <div class="campo">
+      <label for="mes">Mês</label>
+      <select id="mes">
+        <option value="">Selecione</option>
+        <option>janeiro</option>
+        <option>fevereiro</option>
+        <option>março</option>
+        <option>abril</option>
+        <option>maio</option>
+        <option>junho</option>
+        <option>julho</option>
+        <option>agosto</option>
+        <option>setembro</option>
+        <option>outubro</option>
+        <option>novembro</option>
+        <option>dezembro</option>
+      </select>
+    </div>
+    <div class="campo">
+      <label for="ano">Ano</label>
+      <input id="ano" type="text" inputmode="numeric" autocomplete="off" placeholder="Ex.: 2026">
+    </div>
+  </div>
+
+  <div class="campo">
+    <label for="alcance">Alcance</label>
+    <input id="alcance" type="text" inputmode="decimal" autocomplete="off" placeholder="Ex.: 12480">
+  </div>
+
+  <div class="campo">
+    <label for="seguidores">Seguidores novos</label>
+    <input id="seguidores" type="text" inputmode="decimal" autocomplete="off" placeholder="Ex.: 320">
+  </div>
+
+  <div class="campo">
+    <label for="post">Melhor post</label>
+    <input id="post" type="text" maxlength="140" autocomplete="off" placeholder="Ex.: Reel dos bastidores">
+  </div>
+
+  <button id="gerar" class="primario" type="button">Gerar relatório</button>
+
+  <p id="erro" class="erro" role="alert" hidden></p>
+
+  <section id="resultado" class="resultado" hidden>
+    <p id="texto"></p>
+    <div class="acoes">
+      <button id="copiar" class="secundario" type="button">Copiar</button>
+      <span id="aviso" class="aviso" role="status" hidden>Texto copiado</span>
+    </div>
+    <div class="pdf">
+      <button id="baixar" class="secundario" type="button">Baixar em PDF</button>
+      <p class="dica">Na janela que abrir, escolha Salvar como PDF.</p>
+    </div>
+  </section>
+</main>
+
+<section id="tela-relatorio" hidden>
+  <div class="controles">
+    <div class="barra">
+      <button id="imprimir" class="primario" type="button">Imprimir ou salvar em PDF</button>
+      <button id="voltar" class="secundario" type="button">Voltar</button>
+    </div>
+    <p id="falha" class="erro" role="alert" hidden>Não foi possível abrir a impressão aqui. Abra este arquivo direto no navegador e tente de novo.</p>
+  </div>
+  <div id="caixa-slide">
+    <div id="slide">
+      <h2 class="imp-titulo">Relatório mensal</h2>
+      <p class="imp-periodo" id="imp-periodo"></p>
+      <div class="imp-corpo"><p class="imp-texto" id="imp-texto"></p></div>
+    </div>
+  </div>
+</section>
+
+<script>
+  var elMes = document.getElementById("mes");
+  var elAno = document.getElementById("ano");
+  var elAlcance = document.getElementById("alcance");
+  var elSeg = document.getElementById("seguidores");
+  var elPost = document.getElementById("post");
+  var elErro = document.getElementById("erro");
+  var elResultado = document.getElementById("resultado");
+  var elTexto = document.getElementById("texto");
+  var elAviso = document.getElementById("aviso");
+  var elCampos = document.getElementById("tela-campos");
+  var elTela = document.getElementById("tela-relatorio");
+  var elCaixa = document.getElementById("caixa-slide");
+  var elSlide = document.getElementById("slide");
+  var elImpPeriodo = document.getElementById("imp-periodo");
+  var elImpTexto = document.getElementById("imp-texto");
+  var elFalha = document.getElementById("falha");
+  var temporizador = null;
+  var imprimiu = false;
+
+  function inteiroValido(v) { return /^[0-9]+$/.test(v); }
+
+  // Aceita só dígitos ou grupos de 3 dígitos separados por ponto (11.514) ou por vírgula (11,514)
+  function numeroValido(v) {
+    return /^[0-9]+$/.test(v) ||
+           /^[0-9]{1,3}(\.[0-9]{3})+$/.test(v) ||
+           /^[0-9]{1,3}(,[0-9]{3})+$/.test(v);
+  }
+
+  function limparSeparadores(v) { return v.replace(/[.,]/g, ""); }
+
+  function formatarMilhar(v) {
+    var limpo = v.replace(/^0+(?=\d)/, "");
+    return limpo.replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+  }
+
+  function mostrarErro() {
+    elResultado.hidden = true;
+    elAviso.hidden = true;
+    elErro.textContent = "Digite só números inteiros, sem letras nem símbolos.";
+    elErro.hidden = false;
+  }
+
+  function gerar() {
+    var mes = elMes.value.trim();
+    var ano = elAno.value.trim();
+    var alcance = elAlcance.value.trim();
+    var seg = elSeg.value.trim();
+    var post = elPost.value.trim();
+
+    if (!mes || !ano || !alcance || !seg || !post ||
+        !inteiroValido(ano) || !numeroValido(alcance) || !numeroValido(seg)) {
+      mostrarErro();
+      return;
+    }
+
+    elErro.hidden = true;
+    elAviso.hidden = true;
+    elTexto.textContent =
+      "Em " + mes + " de " + ano + ", o perfil alcançou " + formatarMilhar(limparSeparadores(alcance)) +
+      " contas e ganhou " + formatarMilhar(limparSeparadores(seg)) + " seguidores novos. O melhor post foi: " + post + (/[.!?]["'”’)\]]*$/.test(post) ? "" : ".");
+    elImpPeriodo.textContent = mes + " de " + ano;
+    elImpTexto.textContent = elTexto.textContent;
+    elResultado.hidden = false;
+  }
+
+  function mostrarCopiado() {
+    elAviso.hidden = false;
+    clearTimeout(temporizador);
+    temporizador = setTimeout(function () { elAviso.hidden = true; }, 2500);
+  }
+
+  function copiarAlternativo(texto) {
+    var area = document.createElement("textarea");
+    area.value = texto;
+    area.setAttribute("readonly", "");
+    area.style.position = "fixed";
+    area.style.opacity = "0";
+    document.body.appendChild(area);
+    area.select();
+    area.setSelectionRange(0, texto.length);
+    var ok = false;
+    try { ok = document.execCommand("copy"); } catch (e) { ok = false; }
+    document.body.removeChild(area);
+    if (ok) mostrarCopiado();
+  }
+
+  function copiar() {
+    var texto = elTexto.textContent;
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(texto).then(mostrarCopiado, function () {
+        copiarAlternativo(texto);
+      });
+    } else {
+      copiarAlternativo(texto);
+    }
+  }
+
+  // Ajusta a tela 1920x1080 à largura disponível
+  function ajustarEscala() {
+    if (elTela.hidden) return;
+    var escala = elCaixa.clientWidth / 1920;
+    elSlide.style.transform = "scale(" + escala + ")";
+    elCaixa.style.height = (1080 * escala) + "px";
+  }
+
+  function mostrarFalha() { elFalha.hidden = false; }
+
+  function imprimir() {
+    elFalha.hidden = true;
+    imprimiu = false;
+    try {
+      window.print();
+    } catch (e) {
+      mostrarFalha();
+      return;
+    }
+    // Se o navegador ignorar a chamada, o evento de impressão não dispara
+    setTimeout(function () { if (!imprimiu) mostrarFalha(); }, 1000);
+  }
+
+  window.addEventListener("beforeprint", function () { imprimiu = true; });
+  window.addEventListener("resize", ajustarEscala);
+
+  function abrirTelaRelatorio() {
+    document.body.classList.add("modo-relatorio");
+    elCampos.hidden = true;
+    elFalha.hidden = true;
+    elTela.hidden = false;
+    ajustarEscala();
+    window.scrollTo(0, 0);
+    setTimeout(imprimir, 250);
+  }
+
+  function voltar() {
+    elTela.hidden = true;
+    elFalha.hidden = true;
+    document.body.classList.remove("modo-relatorio");
+    elCampos.hidden = false;
+    window.scrollTo(0, 0);
+  }
+
+  document.getElementById("gerar").addEventListener("click", gerar);
+  document.getElementById("copiar").addEventListener("click", copiar);
+  document.getElementById("baixar").addEventListener("click", abrirTelaRelatorio);
+  document.getElementById("imprimir").addEventListener("click", imprimir);
+  document.getElementById("voltar").addEventListener("click", voltar);
+</script>
+</body>
+</html>
